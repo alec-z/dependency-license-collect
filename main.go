@@ -158,7 +158,7 @@ func analyseLicenses2(dependencyFile string, dArr []DependencyInfo) (res []Depen
 		if noticeName := execCommand("bash", "-c","ls -1 " + d.Name + "@"+ d.Version + " | grep  -i  NOTICE"); noticeName != "" {
 			noticeName = noticeName[:len(noticeName) - 1]
 			dArr[i].NoticePath = filepath.Join(repPath, d.Name + "@"+ d.Version, noticeName)
-			noticeBytes, _ := ioutil.ReadFile(dArr[i].LicensePath)
+			noticeBytes, _ := ioutil.ReadFile(dArr[i].NoticePath)
 			hasher := sha1.New()
 			hasher.Write(noticeBytes)
 			sha := base64.URLEncoding.EncodeToString(hasher.Sum(nil))
@@ -245,6 +245,7 @@ You can find a copy of the License at %s.
 ================================================================
 You can find a copy of the Notice at %s for the the following component(s)
 See the respective project link for details.
+
 `
 	subComponentLineN := `%s (%s)`
 	noticeMap := make(map[string][]*DependencyInfo)
@@ -260,7 +261,7 @@ See the respective project link for details.
 				noticeMap[d.NoticeHash] = make([]*DependencyInfo, 1)
 				noticeMap[d.NoticeHash][0] = &dArr[i]
 			} else {
-				noticeMap[d.NoticeHash] = append(noticeMap[d.LicenseHash], &dArr[i])
+				noticeMap[d.NoticeHash] = append(noticeMap[d.NoticeHash], &dArr[i])
 			}
 		}
 	}
@@ -271,8 +272,8 @@ See the respective project link for details.
 		dNameTokens := strings.Split(v[0].Name, "/")
 		noticeMap[k][0].NewNoticeName = filepath.Base(v[0].NoticePath) + "_" + dNameTokens[len(dNameTokens)-2] + "_" + dNameTokens[len(dNameTokens)-1]
 
-		if licenseMap[k][0].NewNoticeName != "" {
-			execCommand("cp", v[0].NoticePath, outputDir+"/"+licenseMap[k][0].NewNoticeName)
+		if noticeMap[k][0].NewNoticeName != "" {
+			execCommand("cp", v[0].NoticePath, outputDir+"/"+noticeMap[k][0].NewNoticeName)
 		}
 
 
