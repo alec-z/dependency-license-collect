@@ -44,8 +44,28 @@ func (lhs LicenseHashInfos) Less(i, j int) bool {
 
 func (lhs LicenseHashInfos) Swap(i ,j int) {
 	lhs[i], lhs[j] = lhs[j], lhs[i]
-
 }
+/*
+func Contain(obj interface{}, target interface{}) (bool) {
+	targetValue := reflect.ValueOf(target)
+	switch reflect.TypeOf(target).Kind() {
+	case reflect.Slice, reflect.Array:
+		for i := 0; i < targetValue.Len(); i++ {
+			if targetValue.Index(i).Interface() == obj {
+				return true
+			}
+		}
+	case reflect.Map:
+		if targetValue.MapIndex(reflect.ValueOf(obj)).IsValid() {
+			return true
+		}
+	}
+
+	return false
+}
+
+*/
+
 
 /*var LicenseRegexpArr = [...][2]string {
 {"The Apache Software License, Version 2.0", `\bApache\b.+\b2`},
@@ -60,6 +80,11 @@ func (lhs LicenseHashInfos) Swap(i ,j int) {
 }
 
 */
+
+/*
+var licenseCategoryB = [...]string{"EPL 1.0", "MPL 1.0"}
+var licenseCategoryX = [...]string{"GPL", "LGPL"}
+ */
 
 func main() {
 	dependencyFile := flag.String("dependency", "", "dependency file name path, e.g -dependency=../servicecomb-kie/go.mod")
@@ -77,6 +102,7 @@ func main() {
 	dependencyInfoArr := dependenciesList(*dependencyFile)
 	downloadDependencies(*dependencyFile)
 	analyseLicenses2(*dependencyFile, dependencyInfoArr)
+	/*validateLicenses(*dependencyFile)*/
 	outputFile(*dependencyFile, dependencyInfoArr, *licenseFile,*noticeFile, *outputDir, *projectName)
 
 }
@@ -168,6 +194,21 @@ func analyseLicenses2(dependencyFile string, dArr []DependencyInfo) (res []Depen
 
 	return dArr
 }
+/*
+func validateLicenses(dArr []DependencyInfo) bool {
+	 for _, d := range dArr {
+
+	 	if Contain(d.LicenseName, licenseCategoryB) {
+			fmt.Println("Category B founded !!! cannot find license file for " , d.LicenseName)
+
+		} else if Contain(d.LicenseName, licenseCategoryX) {
+			fmt.Println("Category B founded !!! cannot find license file for " , d.LicenseName)
+		}
+	 }
+	 return true
+}
+*/
+
 
 func outputFile(dependencyFile string, dArr []DependencyInfo, licenseFile string, noticeFile string, outputDir string, projectName string) {
 	licenseMap := make(map[string][]*DependencyInfo)
